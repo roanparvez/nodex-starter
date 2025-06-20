@@ -1,19 +1,36 @@
+import mongoose from "mongoose";
 import app from "./app.js";
 import logger from "./utils/logger.js";
+import { ENV } from "./config/env.js";
 
-const port = 3000;
+const port = ENV.PORT || 3000;
 
 const server = app.listen(port, () => {
-  logger.info(`Server is running on: http://localhost:${port}`);
+  logger.info(`Server is running on port: ${port}`);
 });
 
-process.on("SIGINT", () => {
-  logger.info("SIGINT received. Shutting down server...");
+// Graceful Shutdown
+const shutdown = async () => {
+  logger.info("Graceful shutdown initiated...");
+
+  try {
+    await mongoose.connection.close();
+    logger.info("MongoDB connection closed.");
+  } catch (err) {
+    logger.error("Error closing MongoDB connection:", err);
+  }
+
   server.close(() => {
-    logger.info("Server closed.");
+    logger.info("Server closed successfully.");
     process.exit(0);
   });
-});
 
-// Export the server for testing purposes
-export default server;
+  // Force exit if shutdown takes too long
+  setTimeout(() => {
+    logger.warn("Force exit after 10 seconds.");
+    process.exit(1);
+  }, 10_000);
+};
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
