@@ -7,7 +7,7 @@ interface MongooseError extends Error {
   keyValue?: Record<string, any>;
 }
 
-export function ErrorHandler(
+export function errorHandler(
   err: Error | ApiError | MongooseError,
   _req: Request,
   res: Response,
