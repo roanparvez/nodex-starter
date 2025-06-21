@@ -5,6 +5,7 @@ import rateLimit from "express-rate-limit";
 import security from "./middlewares/security.js";
 import { ENV } from "./config/env.js";
 import logger from "./utils/logger.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 
@@ -37,5 +38,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 app.use(security);
+
+app.use(errorHandler);
 
 export default app;
