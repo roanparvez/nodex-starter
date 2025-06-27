@@ -3,9 +3,24 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
 import eslintConfigPrettier from "eslint-config-prettier";
+import eslintPluginPrettier from "eslint-plugin-prettier";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 
 export default defineConfig([
-  // TypeScript + JavaScript base configuration
+  {
+    ignores: [
+      "node_modules",
+      "dist",
+      "build",
+      "logs",
+      "coverage",
+      "out",
+      "public",
+      ".git",
+      "eslint.config.mjs",
+    ],
+  },
+  // Base configuration for all JS/TS files
   {
     files: ["**/*.{js,ts,mjs,cjs,mts,cts}"],
     languageOptions: {
@@ -13,6 +28,7 @@ export default defineConfig([
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
+        project: "./tsconfig.json",
       },
       globals: {
         ...globals.node,
@@ -20,14 +36,31 @@ export default defineConfig([
     },
     plugins: {
       "@typescript-eslint": tseslint.plugin,
+      prettier: eslintPluginPrettier,
+      "simple-import-sort": simpleImportSort,
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      "no-console": "warn",
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_" },
-      ],
+
+      // General rules
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "prefer-const": "warn",
+      eqeqeq: ["error", "always"],
+      curly: ["error", "all"],
+      "consistent-return": "warn",
+      "no-implicit-coercion": "warn",
+
+      // TypeScript-specific rules
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-floating-promises": "error",
+
+      // Prettier formatting
+      "prettier/prettier": "error",
+
+      // Import sorting
+      "simple-import-sort/imports": "warn",
+      "simple-import-sort/exports": "warn",
     },
   },
 
@@ -37,5 +70,6 @@ export default defineConfig([
     ...js.configs.recommended,
   },
 
+  // Disable rules that conflict with Prettier
   eslintConfigPrettier,
 ]);

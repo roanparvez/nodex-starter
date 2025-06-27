@@ -1,10 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+
 import { ApiError } from "../utils/apiError.js";
 
 interface MongooseError extends Error {
   path?: string;
   code?: number;
-  keyValue?: Record<string, any>;
+  keyValue?: Record<string, unknown>;
 }
 
 export function errorHandler(

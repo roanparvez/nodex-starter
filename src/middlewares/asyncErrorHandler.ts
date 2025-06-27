@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 
 type AsyncHandler = (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<any>;
+) => Promise<void>;
 
 export const asyncErrorHandler =
   (myFunc: AsyncHandler) =>
